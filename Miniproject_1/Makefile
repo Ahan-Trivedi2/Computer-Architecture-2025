@@ -1,6 +1,6 @@
 filename = Miniproject1
 top_module = rgb_fsm
-pcf_file := /home/atrivedi/Computer-Architecture-2025/common/iceBlinkPico.pcf
+pcf_file := /home/atrivedi/Computer-Architecture-2025/Common/iceBlinkPico.pcf
 
 build:
 	 yosys -p "synth_ice40 -top $(top_module) -json $(filename).json" $(filename).sv
