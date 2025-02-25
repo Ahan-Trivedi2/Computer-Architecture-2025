@@ -32,7 +32,21 @@ module miniproject_2 # ( // Create parameterized miniproject_2 module
     // Compute RGB intensity values based on hue color wheel
     always_comb begin // Combinatorial logic block since clock is not important
         case (hue_angle / 60) // Divides the hsv color wheel into 6 segments
-            0: begin duty_R = 255; duty_G = (hue_angle % 60) * 255 / 60; duty_B = 0; end
-            1: begin duty_R = (60 - (hue_angle % 60) * 255 / 60); duty_G = 255; duty_B = 0; end
-            
+            0: begin duty_R = 255; duty_G = (hue_angle % 60) * 255 / 60; duty_B = 0; end // Goes through the first sixth of the hsv color wheel 
+            1: begin duty_R = (60 - (hue_angle % 60) * 255 / 60); duty_G = 255; duty_B = 0; end // Goes through the second sixth of the hsv color wheel
+            2: begin duty_R = 0; duty_G = 255; duty_B = (hue_angle % 60) * 255 / 60; end // Goes through the third sixth of the hsv color wheel 
+            3: begin duty_r = 0; duty_g = (60 - (hue_angle % 60)) * 255 / 60; duty_b = 255; end // Goes through the fourth sixth of the hsv color wheel
+            4: begin duty_r = (hue_angle % 60) * 255 / 60; duty_g = 0; duty_b = 255; end // Goes through the fifth sixth of the hsv color wheel
+            5: begin duty_r = 255; duty_g = 0; duty_b = (60 - (hue_angle % 60)) * 255 / 60; end // Goes through the sixth sixth of the hsv color wheel
+            default: begin duty_R = 0; duty_G = 0; duty_B = 0; end // Safety mechanism to prevent undefined behavior
+        endcase
     end
+    // Logic to increment PWM counter
+    always_ff @(posedge clk) begin // Use always_ff since updating a value stored in a register.
+        pwm_counter <= pwm_counter + 1; // Increment pwm counter using non-blocking assignment
+    end
+    // FPGA PWM Outputs
+    assign RGB_R = (pwm_counter < duty_R) // PWM Red
+    assign RGB_G = (pwm_counter < duty_G) // PWM Green
+    assign RGB_B = (pwm_counter < duty_B) // PWM Blue
+endmodule
