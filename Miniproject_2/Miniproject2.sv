@@ -1,4 +1,4 @@
-module miniproject_2 # ( // Create parameterized miniproject_2 module
+module miniproject_2 #( // Create parameterized miniproject_2 module
     parameter CLK_FREQUENCY = 12000000, // Clock Signal Frequency (12MHz) of our FPGA Board
     parameter STEP_INTERVAL = CLK_FREQUENCY / 360 // Every 1/360th of a second, we change the hue by 1 degree (33,333 cycles)
 )(
@@ -33,7 +33,7 @@ module miniproject_2 # ( // Create parameterized miniproject_2 module
     always_comb begin // Combinatorial logic block since clock is not important
         case (hue_angle / 60) // Divides the hsv color wheel into 6 segments
             0: begin duty_R = 255; duty_G = (hue_angle % 60) * 255 / 60; duty_B = 0; end // Goes through the first sixth of the hsv color wheel 
-            1: begin duty_R = (60 - (hue_angle % 60)) * (255 / 60); duty_G = 255; duty_B = 0; end // Goes through the second sixth of the hsv color wheel
+            1: begin duty_R = (60 - (hue_angle % 60)) * 255 / 60; duty_G = 255; duty_B = 0; end // Goes through the second sixth of the hsv color wheel
             2: begin duty_R = 0; duty_G = 255; duty_B = (hue_angle % 60) * 255 / 60; end // Goes through the third sixth of the hsv color wheel 
             3: begin duty_R = 0; duty_G = (60 - (hue_angle % 60)) * 255 / 60; duty_B = 255; end // Goes through the fourth sixth of the hsv color wheel
             4: begin duty_R = (hue_angle % 60) * 255 / 60; duty_G = 0; duty_B = 255; end // Goes through the fifth sixth of the hsv color wheel
