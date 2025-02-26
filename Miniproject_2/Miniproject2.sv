@@ -1,18 +1,18 @@
 module miniproject_2 # ( // Create parameterized miniproject_2 module
-    parameter CLK_FREQUENCY = 12000000 // Clock Signal Frequency (12MHz) of our FPGA Board
-    parameter STEP_INTERVAL = CLK_FREQUENCY / 360; // Every 1/360th of a second, we change the hue by 1 degree (33,333 cycles)
+    parameter CLK_FREQUENCY = 12000000, // Clock Signal Frequency (12MHz) of our FPGA Board
+    parameter STEP_INTERVAL = CLK_FREQUENCY / 360 // Every 1/360th of a second, we change the hue by 1 degree (33,333 cycles)
 )(
     input logic clk, // Clock input 
     output logic RGB_R, // Red LED Output
     output logic RGB_B, // Blue LED Output
-    output logic RGB_G, // Green LED Output
+    output logic RGB_G // Green LED Output
 );
     // Register Initialization
     logic [15:0] clock_counter; // Counter for hue transition (every 33,333 clock cycles), 16 bits
     logic [8:0] hue_angle; // 9 bits of storage for 0-359 degrees of possible hue colors
     logic [7:0] duty_R; // 8 bits to store PWM duty cycle for the Red LED (0-255)
-    logic [7:0] duty_B; // 8 bits to store PWM duty cycle for the Red LED (0-255)
-    logic [7:0] duty_G; // 8 bits to store PWM duty cycle for the Red LED (0-255)
+    logic [7:0] duty_B; // 8 bits to store PWM duty cycle for the Blue LED (0-255)
+    logic [7:0] duty_G; // 8 bits to store PWM duty cycle for the Green LED (0-255)
     logic [7:0] pwm_counter; // 8 bit counter to allow color changes to occur smoothly and not rapidly.
     // Initialize values to the variables stored in register
     initial begin
@@ -33,11 +33,11 @@ module miniproject_2 # ( // Create parameterized miniproject_2 module
     always_comb begin // Combinatorial logic block since clock is not important
         case (hue_angle / 60) // Divides the hsv color wheel into 6 segments
             0: begin duty_R = 255; duty_G = (hue_angle % 60) * 255 / 60; duty_B = 0; end // Goes through the first sixth of the hsv color wheel 
-            1: begin duty_R = (60 - (hue_angle % 60) * 255 / 60); duty_G = 255; duty_B = 0; end // Goes through the second sixth of the hsv color wheel
+            1: begin duty_R = (60 - (hue_angle % 60)) * (255 / 60); duty_G = 255; duty_B = 0; end // Goes through the second sixth of the hsv color wheel
             2: begin duty_R = 0; duty_G = 255; duty_B = (hue_angle % 60) * 255 / 60; end // Goes through the third sixth of the hsv color wheel 
-            3: begin duty_r = 0; duty_g = (60 - (hue_angle % 60)) * 255 / 60; duty_b = 255; end // Goes through the fourth sixth of the hsv color wheel
-            4: begin duty_r = (hue_angle % 60) * 255 / 60; duty_g = 0; duty_b = 255; end // Goes through the fifth sixth of the hsv color wheel
-            5: begin duty_r = 255; duty_g = 0; duty_b = (60 - (hue_angle % 60)) * 255 / 60; end // Goes through the sixth sixth of the hsv color wheel
+            3: begin duty_R = 0; duty_G = (60 - (hue_angle % 60)) * 255 / 60; duty_B = 255; end // Goes through the fourth sixth of the hsv color wheel
+            4: begin duty_R = (hue_angle % 60) * 255 / 60; duty_G = 0; duty_B = 255; end // Goes through the fifth sixth of the hsv color wheel
+            5: begin duty_R = 255; duty_G = 0; duty_B = (60 - (hue_angle % 60)) * 255 / 60; end // Goes through the sixth sixth of the hsv color wheel
             default: begin duty_R = 0; duty_G = 0; duty_B = 0; end // Safety mechanism to prevent undefined behavior
         endcase
     end
@@ -46,7 +46,7 @@ module miniproject_2 # ( // Create parameterized miniproject_2 module
         pwm_counter <= pwm_counter + 1; // Increment pwm counter using non-blocking assignment
     end
     // FPGA PWM Outputs
-    assign RGB_R = (pwm_counter < duty_R) // PWM Red
-    assign RGB_G = (pwm_counter < duty_G) // PWM Green
-    assign RGB_B = (pwm_counter < duty_B) // PWM Blue
+    assign RGB_R = (pwm_counter < duty_R); // PWM Red
+    assign RGB_G = (pwm_counter < duty_G); // PWM Green
+    assign RGB_B = (pwm_counter < duty_B); // PWM Blue
 endmodule
