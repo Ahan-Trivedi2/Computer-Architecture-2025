@@ -14,7 +14,7 @@ module miniproject_2_tb; // Define a test bench module
     );
     // Generate vcd file for visualiztion in GTKWave
     initial begin // Intial block which runs once at the start of simulation
-        $dumpfile("Miniproject2_tb.vcd"); // Store signal transitions for later waveform analysis
+        $dumpfile("miniproject_2_tb.vcd"); // Store signal transitions for later waveform analysis
         $dumpvars(1, uut); // Records changes in uut's signals
         #1000000000; // Tells the simulator to wait for 1 second
         $finish; // Tells the simulator to finish 
