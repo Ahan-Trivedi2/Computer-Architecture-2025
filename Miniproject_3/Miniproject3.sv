@@ -26,8 +26,8 @@ initial begin
 end 
 
 // Increment a sample counter on rising edge of the clock, reset back to zero when counter reaches 511 (one full sin wave period)
-always_ff @(posedge ck) begin
-    if (sample_index = 511)
+always_ff @(posedge clk) begin
+    if (sample_index == 511)
         sample_index <= 0;
     else begin
         sample_index++;
@@ -42,8 +42,17 @@ always_comb begin
     end else if (sample_index < 256) begin
         // Q2: Mirror LUT index (pi/2 to pi)
         dac_output = quarter_sine_waveform_values[127 - (sample_index - 128)];
-    end else if (condition) begin
-        
+    end else if (sample_index < 384) begin
+        // Q3: Invert LUT values (pi to 3pi/2)
+        dac_output = 1023 - quarter_sine_waveform_values[sample_index-256];
+    end else begin
+        // Q4: Mirror then Invert LUT (3pi/2 to 2pi)
+        dac_output = 1023 - quarter_sine_waveform_values[127 - (sample_index - 384)];
     end
 end
+
+// Assign each bit of the 10-bit DAC output value to its respective FPGA pin
+assign {_48b, _45a, _49a, _3b, _5a, _0a, _2a, _4a, _6a, _9b} = dac_output;
+
+endmodule
 
